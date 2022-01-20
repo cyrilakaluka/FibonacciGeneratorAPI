@@ -1,9 +1,10 @@
+using FibonacciGeneratorAPI.AppConfig;
+using FibonacciGeneratorAPI.Installers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 namespace FibonacciGeneratorAPI
 {
@@ -19,12 +20,7 @@ namespace FibonacciGeneratorAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FibonacciGeneratorAPI", Version = "v1" });
-            });
+            services.InstallServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,8 +29,15 @@ namespace FibonacciGeneratorAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FibonacciGeneratorAPI v1"));
+
+                // Configure Swagger
+                var swaggerConfig = app.ApplicationServices.GetService<SwaggerConfig>();
+                app.UseSwagger(options => options.RouteTemplate = swaggerConfig?.JsonRoute);
+                app.UseSwaggerUI(x =>
+                {
+                    x.RoutePrefix = string.Empty;
+                    x.SwaggerEndpoint($"{swaggerConfig?.UiEndpoint}", swaggerConfig?.Description);
+                });
             }
 
             app.UseHttpsRedirection();
