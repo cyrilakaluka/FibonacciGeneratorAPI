@@ -1,4 +1,4 @@
-﻿namespace FibonacciGeneratorAPI.Installers
+﻿namespace FibonacciGeneratorAPI.Installers.Interfaces
 {
     public interface IInstaller
     {
