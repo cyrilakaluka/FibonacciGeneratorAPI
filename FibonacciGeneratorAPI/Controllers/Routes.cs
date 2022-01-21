@@ -1,8 +1,8 @@
 ﻿namespace FibonacciGeneratorAPI.Controllers
 {
-    internal static class Routes
+    public static class Routes
     {
         private const string Base = "api";
-        public const string FibonacciSubsequence = Base + "/fibonacci-subsequence";
+        public const string GetFibonacciSubsequence = Base + "/fibonacci-subsequence";
     }
 }

@@ -14,7 +14,6 @@ namespace FibonacciGeneratorAPI.Installers
         {
             Services.AddControllers();
             Services.AddMvc().AddMvcOptions(o => o.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter()));
-            Services.AddSwaggerDocumentation();
         }
     }
 }

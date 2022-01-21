@@ -41,6 +41,9 @@ namespace FibonacciGeneratorAPI
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseCors(CorsConfig.DefaultPolicy);
 
             app.UseRouting();
 
