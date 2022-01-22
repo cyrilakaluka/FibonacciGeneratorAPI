@@ -5,7 +5,9 @@ namespace FibonacciGeneratorAPI.DTOs.Response
 {
     public class FibonacciSubsequenceResponse
     {
-        public ICollection<int> Result { get; set; } = Enumerable.Empty<int>().ToList();
+        public IReadOnlyCollection<string> Result { get; set; } = Enumerable.Empty<string>().ToList();
+
+        public int ResultCount => Result.Count;
 
         public ICollection<string> Errors { get; set; } = Enumerable.Empty<string>().ToList();
     }

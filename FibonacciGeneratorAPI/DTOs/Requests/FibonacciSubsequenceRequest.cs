@@ -29,14 +29,14 @@ namespace FibonacciGeneratorAPI.DTOs.Requests
         /// The time in milliseconds(ms) that the Fibonacci sequence request is allowed to execute before timing out.
         /// </summary>
         [DefaultValue(int.MaxValue)]
-        [Range(200, int.MaxValue)]
+        [Range(1, int.MaxValue)]
         public int ExecutionTimeout { get; set; } = int.MaxValue;
 
         /// <summary>
         /// The maximum amount of memory in MegaBytes(MB) that the program is allowed to use.
         /// </summary>
         [DefaultValue(int.MaxValue)]
-        [Range(200, int.MaxValue)]
+        [Range(1, int.MaxValue)]
         public int MaxAllowedMemoryUsage { get; set; } = int.MaxValue;
     }
 }

@@ -37,16 +37,16 @@ namespace FibonacciGeneratorAPI.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(FibonacciSubsequenceControllerTestDataSource.TestData), MemberType = typeof(FibonacciSubsequenceControllerTestDataSource))]
-        public async Task GetFibonacciSubsequence_WithValidStartingAndEndingIndex_ReturnsExpectedResult(int startIndex, int endIndex, int[] expectedResult)
+        [MemberData(nameof(FibonacciSubsequenceControllerTestDataSource.ValidStartingAndEndingIndexTestData), MemberType = typeof(FibonacciSubsequenceControllerTestDataSource))]
+        public async Task GetFibonacciSubsequence_WithValidStartingAndEndingIndex_ReturnsExpectedResult(int startIndex, int endIndex, string[] expectedResult)
         {
             // Arrange
             var request = new FibonacciSubsequenceRequest { StartIndex = startIndex, EndIndex = endIndex };
             _fibonacciGeneratorStub
                 .Setup(f => f.GenerateSubsequenceAsync(startIndex, endIndex, It.IsAny<bool>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedResult);
-            _memoryUsageMonitorStub.Setup(m => m.MonitorMaxMemUsageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                                   .Returns(async (int _, int _, CancellationToken c) =>
+            _memoryUsageMonitorStub.Setup(m => m.MonitorMaxMemUsageAsync(It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<int>()))
+                                   .Returns(async (int _, CancellationToken c, int _) =>
                                    {
                                        while (true)
                                        {
@@ -68,9 +68,8 @@ namespace FibonacciGeneratorAPI.UnitTests
         }
 
         [Theory]
-        [InlineData(new int[]{})]
-        [InlineData(new[]{ 0, 1, 1, 3, 5})]
-        public async Task GetFibonacciSubsequence_WithExecutionTimeout_ReturnsTimeoutError(int[] outputSequence)
+        [MemberData(nameof(FibonacciSubsequenceControllerTestDataSource.ExecutionTimeoutTestData), MemberType = typeof(FibonacciSubsequenceControllerTestDataSource))]
+        public async Task GetFibonacciSubsequence_WithExecutionTimeout_ReturnsTimeoutError(string[] outputSequence)
         {
             // Arrange
             var request = new FibonacciSubsequenceRequest { StartIndex = 0, EndIndex = 2, ExecutionTimeout = 1000 };
@@ -85,8 +84,8 @@ namespace FibonacciGeneratorAPI.UnitTests
                                        }
                                        return outputSequence;
                                    });
-            _memoryUsageMonitorStub.Setup(m => m.MonitorMaxMemUsageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                                   .Returns(async (int _, int _, CancellationToken c) =>
+            _memoryUsageMonitorStub.Setup(m => m.MonitorMaxMemUsageAsync(It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<int>()))
+                                   .Returns(async (int _, CancellationToken c, int _) =>
                                    {
                                        while (true)
                                        {
@@ -121,10 +120,10 @@ namespace FibonacciGeneratorAPI.UnitTests
                                            if (c.IsCancellationRequested)
                                                break;
                                        }
-                                       return new[] { 0, 1, 1, 3, 5 };
+                                       return new[] { "0", "1", "1", "3", "5" };
                                    });
-            _memoryUsageMonitorStub.Setup(m => m.MonitorMaxMemUsageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                                   .Returns(async (int _, int _, CancellationToken c) =>
+            _memoryUsageMonitorStub.Setup(m => m.MonitorMaxMemUsageAsync(It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<int>()))
+                                   .Returns(async (int _, CancellationToken c, int _) =>
                                    {
                                        await Task.Delay(50, c);
                                    });
@@ -136,16 +135,22 @@ namespace FibonacciGeneratorAPI.UnitTests
 
             // Assert
             result.Should().NotBeNull();
-            result.Value.Should().BeOfType<FibonacciSubsequenceResponse>().Which.Result.Should().BeEquivalentTo(new[] { 0, 1, 1, 3, 5 });
+            result.Value.Should().BeOfType<FibonacciSubsequenceResponse>().Which.Result.Should().BeEquivalentTo(new[] { "0", "1", "1", "3", "5" });
             result.Value.Should().BeOfType<FibonacciSubsequenceResponse>().Which.Errors.ElementAt(0).Should().BeEquivalentTo("The maximum memory usage was reached.");
         }
 
         private static class FibonacciSubsequenceControllerTestDataSource
         {
-            public static IEnumerable<object[]> TestData => new List<object[]>
+            public static IEnumerable<object[]> ValidStartingAndEndingIndexTestData => new List<object[]>
             {
-                new object[] { 0, 5, new[] { 0, 1, 1, 2, 3, 5 } },
-                new object[] { 4, 10, new[] { 3, 5, 8, 13, 21, 34, 55 } }
+                new object[] { 0, 5, new[] { "0", "1", "1", "3", "5" } },
+                new object[] { 4, 10, new[] { "3", "5", "8", "13", "21", "34", "55" } }
+            };
+
+            public static IEnumerable<object[]> ExecutionTimeoutTestData => new List<object[]>
+            {
+                new object[] { System.Array.Empty<string>() },
+                new object[] { new[] { "0", "1", "1", "3", "5" } }
             };
         }
     }

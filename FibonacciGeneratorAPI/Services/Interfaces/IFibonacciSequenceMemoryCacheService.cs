@@ -1,4 +1,4 @@
 ﻿namespace FibonacciGeneratorAPI.Services.Interfaces
 {
-    public interface IFibonacciSequenceMemoryCacheService : IMemoryCacheService<int?, int> { }
+    public interface IFibonacciSequenceMemoryCacheService : IMemoryCacheService<string, int> { }
 }

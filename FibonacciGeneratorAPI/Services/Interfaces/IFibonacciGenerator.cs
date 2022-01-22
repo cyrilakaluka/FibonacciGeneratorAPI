@@ -6,6 +6,6 @@ namespace FibonacciGeneratorAPI.Services.Interfaces
 {
     public interface IFibonacciGenerator
     {
-        Task<IReadOnlyCollection<int>> GenerateSubsequenceAsync(int startIndex, int endIndex, bool useCache, CancellationToken token);
+        Task<IReadOnlyCollection<string>> GenerateSubsequenceAsync(int startIndex, int endIndex, bool useCache, CancellationToken token);
     }
 }

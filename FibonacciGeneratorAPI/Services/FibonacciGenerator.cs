@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using FibonacciGeneratorAPI.AppConfig;
@@ -24,59 +25,79 @@ namespace FibonacciGeneratorAPI.Services
             _cacheConfig = cacheConfig;
         }
 
-        public async Task<IReadOnlyCollection<int>> GenerateSubsequenceAsync(int startIndex, int endIndex, bool useCache, CancellationToken token)
+        public async Task<IReadOnlyCollection<string>> GenerateSubsequenceAsync(int startIndex, int endIndex, bool useCache, CancellationToken token)
         {
-            var output = new Dictionary<int, int>();
+            var output = new List<string>();
 
-            _logger.LogInformation("Entering loop to generate fibonacci subsequence.");
+            const int numParallelBackgroundTasks = 4;
 
-            for (var i = startIndex; i <= endIndex && !token.IsCancellationRequested; i++)
+            _logger.LogInformation("Generating fibonacci subsequence. Number of background tasks: {0}", numParallelBackgroundTasks);
+
+            for (var i = startIndex; i <= endIndex && !token.IsCancellationRequested; i += numParallelBackgroundTasks)
             {
-                // if useCache is set to true and the cached item exists, add the fibonacci number from cache then continue to the next index
-                int? cachedItem;
-                if (useCache && (cachedItem = await _cacheService.GetAsync(i)).HasValue)
+                var tasks = new List<Task<string>>();
+
+                for (var j = i; j < i + numParallelBackgroundTasks; j++)
                 {
-                    output.Add(i, cachedItem.Value);
-                    continue;
+                    if (j > endIndex) continue;
+
+                    var n = j;
+                    tasks.Add(Task.Run(() => GetFibonacci(n, useCache, token), token));
                 }
 
-                // Otherwise add the fibonacci number after computing it
                 try
                 {
-                    var fibonacci = await GetFibonacciAsync(i, token);
-                    output.Add(i, fibonacci);
+                    await Task.WhenAll(tasks);
                 }
                 catch (OperationCanceledException)
                 {
-                    _logger.LogDebug("Operation cancelled. Exiting loop.");
                     break;
+                }
+
+                tasks.ForEach(task => output.Add(task.Result));
+            }
+
+            _logger.LogInformation("Generating fibonacci subsequence ended. Returning output.");
+
+            return output;
+        }
+
+        private async Task<string> GetFibonacci(int n, bool useCache, CancellationToken token)
+        {
+            string cachedItem;
+            if (useCache && !string.IsNullOrEmpty(cachedItem = await _cacheService.GetAsync(n)))
+            {
+                return cachedItem;
+            }
+
+            var output =  Fibonacci(n, token).ToString();
+
+            _cacheService.Set(n, output, new MemoryCacheEntryOptions { SlidingExpiration = _cacheConfig.SlidingExpiration });
+
+            return output;
+        }
+
+        private static BigInteger Fibonacci(int n, CancellationToken token)
+        {
+            BigInteger output = 0;
+
+            if (n < 2)
+                output = n;
+            else
+            {
+                BigInteger a = 0;
+                BigInteger b = 1;
+
+                for (var i = 2; i <= n; i++)
+                {
+                    token.ThrowIfCancellationRequested();
+
+                    output = a + b;
+                    a = b;
+                    b = output;
                 }
             }
 
-            return output.Values;
-        }
-
-        private async Task<int> GetFibonacciAsync(int n, CancellationToken token)
-        {
-            // Throw if task cancellation was requested
-            token.ThrowIfCancellationRequested();
-
-            int output;
-
-            if (n < 2)
-            {
-                output = n;
-            }
-            else
-            {
-                var taskA = GetFibonacciAsync(n - 1, token);
-                var taskB = GetFibonacciAsync(n - 2, token);
-                await Task.WhenAll(taskA, taskB);
-
-                output = taskA.Result + taskB.Result;
-            }
-
-            _cacheService.Set(n, output, new MemoryCacheEntryOptions { SlidingExpiration = _cacheConfig.SlidingExpiration });
             return output;
         }
     }

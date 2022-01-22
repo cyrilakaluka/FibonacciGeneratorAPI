@@ -15,7 +15,15 @@ namespace FibonacciGeneratorAPI.Services
             _logger = logger;
         }
 
-        public async Task MonitorMaxMemUsageAsync(int limit, int pollingInterval, CancellationToken token)
+        public int PrivateMemorySize  {
+            get
+            {
+                using var proc = Process.GetCurrentProcess();
+                return (int)proc.PrivateMemorySize64 >> 20;
+            }
+        }
+
+        public async Task MonitorMaxMemUsageAsync(int limit, CancellationToken token, int pollingInterval = 0)
         {
             while (true)
             {
@@ -23,11 +31,7 @@ namespace FibonacciGeneratorAPI.Services
 
                 await Task.Delay(pollingInterval, token);
 
-                using var proc = Process.GetCurrentProcess();
-                var memoryInUse = proc.PrivateMemorySize64 >> 20;
-                _logger.LogDebug($"Memory in use: {memoryInUse}, Limit: {limit}");
-
-                if (memoryInUse >= limit)
+                if (PrivateMemorySize >= limit)
                     return;
             }
         }

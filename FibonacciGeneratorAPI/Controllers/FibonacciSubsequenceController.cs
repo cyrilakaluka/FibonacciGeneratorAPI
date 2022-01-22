@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FibonacciGeneratorAPI.DTOs.Requests;
@@ -33,6 +32,9 @@ namespace FibonacciGeneratorAPI.Controllers
         [HttpGet(Routes.GetFibonacciSubsequence)]
         public async Task<IActionResult>GetFibonacciSubsequence([FromQuery] FibonacciSubsequenceRequest request)
         {
+            // Create the output response
+            var response = new FibonacciSubsequenceResponse();
+
             #region Input Validation
 
             // Validate the request
@@ -50,6 +52,17 @@ namespace FibonacciGeneratorAPI.Controllers
 
             #endregion
 
+            #region Current Memory Usage Check
+
+            if (_memoryUsageMonitor.PrivateMemorySize > request.MaxAllowedMemoryUsage)
+            {
+                response.Errors.Add($"Current memory usage '{_memoryUsageMonitor.PrivateMemorySize}MB' " +
+                                    $"is greater than the specified limit '{request.MaxAllowedMemoryUsage}MB'.");
+                return Ok(response);
+            }
+
+            #endregion
+
             #region Background Tasks Creation
 
             // Create the cancellation token source
@@ -58,16 +71,16 @@ namespace FibonacciGeneratorAPI.Controllers
             // Assign the background tasks that should execute on the thread pool
             _logger.LogInformation("Creating the tasks to execute on the thread pool.");
 
+            var maxMemUsageMonitoringTask = Task.Run(() => _memoryUsageMonitor.MonitorMaxMemUsageAsync(request.MaxAllowedMemoryUsage, source.Token), source.Token);
+
             var executionTimeoutTask = Task.Delay(request.ExecutionTimeout, source.Token);
+
+            await Task.Delay(1, source.Token); // Small delay before starting the fibonacci task
 
             var fibonacciGenerationTask = Task.Run(() => _fibonacciGenerator.GenerateSubsequenceAsync(request.StartIndex,
                                                        request.EndIndex,
                                                        request.UseCache,
                                                        source.Token), source.Token);
-
-            var maxMemUsageMonitoringTask = Task.Run(() => _memoryUsageMonitor.MonitorMaxMemUsageAsync(request.MaxAllowedMemoryUsage,
-                                                         500,
-                                                         source.Token), source.Token);
 
             #endregion
 
@@ -76,11 +89,11 @@ namespace FibonacciGeneratorAPI.Controllers
             try
             {
                 // Wait for any of the tasks to complete
-                await Task.WhenAny(fibonacciGenerationTask, executionTimeoutTask, maxMemUsageMonitoringTask);
+                await Task.WhenAny(executionTimeoutTask, fibonacciGenerationTask, maxMemUsageMonitoringTask);
                 // Request for cancellation of all tasks
                 source.Cancel();
                 // Wait for all tasks to honor the cancellation request
-                await Task.WhenAll(fibonacciGenerationTask, executionTimeoutTask, maxMemUsageMonitoringTask);
+                await Task.WhenAll(executionTimeoutTask, fibonacciGenerationTask, maxMemUsageMonitoringTask);
             }
             catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
             {
@@ -92,12 +105,10 @@ namespace FibonacciGeneratorAPI.Controllers
                                  $"FibonacciGenTask: {fibonacciGenerationTask.Status}, " +
                                  $"MaxMemUsageMonitoringTask: {maxMemUsageMonitoringTask.Status}");
             }
+
             #endregion
 
             #region Output Generation
-
-            // Create the output response
-            var response = new FibonacciSubsequenceResponse();
 
             // Add the errors if any
             if (executionTimeoutTask.IsCompletedSuccessfully)
@@ -108,7 +119,7 @@ namespace FibonacciGeneratorAPI.Controllers
 
             // Assign the fibonacci subsequence result
             if(fibonacciGenerationTask.IsCompletedSuccessfully)
-                response.Result = fibonacciGenerationTask.Result.ToList();
+                response.Result = fibonacciGenerationTask.Result;
 
             return Ok(response);
 
