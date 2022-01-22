@@ -6,6 +6,7 @@ using FibonacciGeneratorAPI.DTOs.Requests;
 using FibonacciGeneratorAPI.DTOs.Response;
 using FibonacciGeneratorAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace FibonacciGeneratorAPI.Controllers
 {
@@ -14,11 +15,15 @@ namespace FibonacciGeneratorAPI.Controllers
     {
         private readonly IFibonacciGenerator _fibonacciGenerator;
         private readonly IMemoryUsageMonitor _memoryUsageMonitor;
+        private readonly ILogger<FibonacciSubsequenceController> _logger;
 
-        public FibonacciSubsequenceController(IFibonacciGenerator fibonacciGenerator, IMemoryUsageMonitor memoryUsageMonitor)
+        public FibonacciSubsequenceController(IFibonacciGenerator fibonacciGenerator, 
+                                              IMemoryUsageMonitor memoryUsageMonitor,
+                                              ILogger<FibonacciSubsequenceController> logger)
         {
             _fibonacciGenerator = fibonacciGenerator;
             _memoryUsageMonitor = memoryUsageMonitor;
+            _logger = logger;
         }
 
         /// <summary>
@@ -31,6 +36,8 @@ namespace FibonacciGeneratorAPI.Controllers
             #region Input Validation
 
             // Validate the request
+            _logger.LogInformation($"Validating that ${nameof(request.StartIndex)} is less than or equal to ${nameof(request.EndIndex)}");
+
             if (request.StartIndex > request.EndIndex)
             {
                 ModelState.AddModelError(nameof(request.StartIndex), "The start index cannot be greater than the end index.");
@@ -49,6 +56,8 @@ namespace FibonacciGeneratorAPI.Controllers
             using var source = new CancellationTokenSource();
 
             // Assign the background tasks that should execute on the thread pool
+            _logger.LogInformation("Creating the tasks to execute on the thread pool.");
+
             var executionTimeoutTask = Task.Delay(request.ExecutionTimeout, source.Token);
 
             var fibonacciGenerationTask = Task.Run(() => _fibonacciGenerator.GenerateSubsequenceAsync(request.StartIndex,
@@ -73,8 +82,16 @@ namespace FibonacciGeneratorAPI.Controllers
                 // Wait for all tasks to honor the cancellation request
                 await Task.WhenAll(fibonacciGenerationTask, executionTimeoutTask, maxMemUsageMonitoringTask);
             }
-            catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException) { } // Ignore task/operation cancellation exceptions
-
+            catch (Exception ex) when (ex is TaskCanceledException or OperationCanceledException)
+            {
+                _logger.LogDebug(ex, "TaskCanceled or OperationCanceled exception caught and ignored.");
+            } // Ignore task/operation cancellation exceptions
+            finally
+            {
+                _logger.LogDebug($"Tasks statuses: ExecutionTimeoutTask: {executionTimeoutTask.Status}, " +
+                                 $"FibonacciGenTask: {fibonacciGenerationTask.Status}, " +
+                                 $"MaxMemUsageMonitoringTask: {maxMemUsageMonitoringTask.Status}");
+            }
             #endregion
 
             #region Output Generation

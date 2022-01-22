@@ -9,14 +9,14 @@ namespace FibonacciGeneratorAPI.DTOs.Requests
         /// The start index of the Fibonacci subsequence. Must be 0 or greater and also less than or equal to the end index.
         /// </summary>
         [Required]
-        [Range(0, uint.MaxValue, ErrorMessage = "Start index cannot be negative")]
+        [Range(0, int.MaxValue, ErrorMessage = "Start index cannot be negative")]
         public int StartIndex { get; set; }
 
         /// <summary>
         /// The end index of the Fibonacci subsequence. Must 0 or greater and also greater than or equal to the start index.
         /// </summary>
         [Required]
-        [Range(0, uint.MaxValue, ErrorMessage = "End index cannot be negative")]
+        [Range(0, int.MaxValue, ErrorMessage = "End index cannot be negative")]
         public int EndIndex { get; set; }
 
         /// <summary>
