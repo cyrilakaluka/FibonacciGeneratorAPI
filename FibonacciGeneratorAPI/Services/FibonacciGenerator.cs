@@ -5,23 +5,30 @@ using System.Threading.Tasks;
 using FibonacciGeneratorAPI.AppConfig;
 using FibonacciGeneratorAPI.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace FibonacciGeneratorAPI.Services
 {
     public class FibonacciGenerator : IFibonacciGenerator
     {
         private readonly IFibonacciSequenceMemoryCacheService _cacheService;
+        private readonly ILogger<FibonacciGenerator> _logger;
         private readonly CacheConfig _cacheConfig;
 
-        public FibonacciGenerator(IFibonacciSequenceMemoryCacheService cacheService, CacheConfig cacheConfig)
+        public FibonacciGenerator(IFibonacciSequenceMemoryCacheService cacheService, 
+                                  ILogger<FibonacciGenerator> logger, 
+                                  CacheConfig cacheConfig)
         {
             _cacheService = cacheService;
+            _logger = logger;
             _cacheConfig = cacheConfig;
         }
 
         public async Task<IReadOnlyCollection<int>> GenerateSubsequenceAsync(int startIndex, int endIndex, bool useCache, CancellationToken token)
         {
             var output = new Dictionary<int, int>();
+
+            _logger.LogInformation("Entering loop to generate fibonacci subsequence.");
 
             for (var i = startIndex; i <= endIndex && !token.IsCancellationRequested; i++)
             {
@@ -41,6 +48,7 @@ namespace FibonacciGeneratorAPI.Services
                 }
                 catch (OperationCanceledException)
                 {
+                    _logger.LogDebug("Operation cancelled. Exiting loop.");
                     break;
                 }
             }
