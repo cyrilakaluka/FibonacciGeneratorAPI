@@ -19,7 +19,7 @@ namespace FibonacciGeneratorAPI.Services
             get
             {
                 using var proc = Process.GetCurrentProcess();
-                return (int)proc.PrivateMemorySize64 >> 20;
+                return (int)(proc.PrivateMemorySize64 >> 20);
             }
         }
 
