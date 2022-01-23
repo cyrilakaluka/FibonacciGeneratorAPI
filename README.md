@@ -26,7 +26,7 @@
       <a href="#about-the-project">About The Project</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
-        <li><a href="#important-links-and-documents">Importand Links and Documents</a></li>
+        <li><a href="#important-links-and-documents">Important Links and Documents</a></li>
       </ul>
     </li>
     <li><a href="#how-to-run">How to run</a></li>
@@ -38,7 +38,7 @@
   
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-This project was implemented to fulfil part of the procedures for a job interview. The orignial requirements for the project were analysed to create a [User Story Specification](https://docs.google.com/document/d/1vHNFNm9OOx84OxGjZptgGecN49NFmc5xeFrbJQGE3CQ/) document. The goal of the API is to provide an endpoint for returning a subsequence from a Fibonacci sequence given a specified start and end index.
+This project was implemented to fulfil part of the procedures for a job interview. The goal of the API is to provide an endpoint for returning a subsequence from a Fibonacci sequence given a specified start and end index. The task requirements for the project were analysed to create a [User Story Specification](https://docs.google.com/document/d/1vHNFNm9OOx84OxGjZptgGecN49NFmc5xeFrbJQGE3CQ/) document.
   
 ### Built With
 * [.Net 5](https://dotnet.microsoft.com/)
@@ -59,13 +59,15 @@ Postman API documentation - [View](https://documenter.getpostman.com/view/192765
 2. Build the solution using Visual Studio, or on the [command line](https://www.microsoft.com/net/core) with `dotnet build`.
 3. Select the `FibonacciGeneratorAPI` profile and start the project. 
 ![SelectProjectProfile](https://user-images.githubusercontent.com/31706741/150678700-afc2d4a3-24cd-43be-b2e9-af0e7fe04580.png)<br/>
-The API will startup by listening on [https://localhost:5001](https://localhost:5001) and [http://localhost:5000](http://localhost:5000).
+The API will startup and listen on [https://localhost:5001](https://localhost:5001) and [http://localhost:5000](http://localhost:5000).
 
 ### Swagger Documentation
 This API supports Swagger. The Swagger UI should automatically launch on the default machine web browser after project startup. However, you can manually view the Swagger UI on a web browser by visiting [http://localhost:5000/index.html](http://localhost:5000/index.html) after project startup.
 
 ### Postman Documentation
-A postman documentation is available for running integration tests on the API. See the [important documents](#important-links-and-documents) section.
+A postman documentation is available for running integration tests on the API. See the [important documents](#important-links-and-documents) section. Before running any request on Postman, ensure `DEV` environment is selected.
+
+![image](https://user-images.githubusercontent.com/31706741/150687915-e1cc0678-fc7a-44d7-997d-56326e3f06d0.png)
 
 ### Unit Test
 The API contains a unit test project. There are two ways to run the unit test:
