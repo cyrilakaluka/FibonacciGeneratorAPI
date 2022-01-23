@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FibonacciGeneratorAPI.AppConfig
+namespace FibonacciGeneratorAPI.AppConfigs
 {
     public class CacheConfig : IAppConfig
     {

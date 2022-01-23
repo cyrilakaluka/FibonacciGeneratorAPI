@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FibonacciGeneratorAPI.AppConfig
+namespace FibonacciGeneratorAPI.AppConfigs
 {
     public class CorsConfig : IAppConfig
     {

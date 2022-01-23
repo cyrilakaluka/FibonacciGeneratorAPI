@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace FibonacciGeneratorAPI.DTOs.Response
+namespace FibonacciGeneratorAPI.DTOs.Responses
 {
     public class FibonacciSubsequenceResponse
     {

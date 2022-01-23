@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using FibonacciGeneratorAPI.AppConfig;
+using FibonacciGeneratorAPI.AppConfigs;
 using FibonacciGeneratorAPI.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;

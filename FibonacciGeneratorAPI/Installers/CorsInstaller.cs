@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using FibonacciGeneratorAPI.AppConfig;
+using FibonacciGeneratorAPI.AppConfigs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

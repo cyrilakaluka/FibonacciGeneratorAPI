@@ -1,5 +1,5 @@
 ﻿using System;
-using FibonacciGeneratorAPI.AppConfig;
+using FibonacciGeneratorAPI.AppConfigs;
 using FibonacciGeneratorAPI.Services;
 using FibonacciGeneratorAPI.Services.Interfaces;
 using Microsoft.Extensions.Configuration;

@@ -1,4 +1,4 @@
-using FibonacciGeneratorAPI.AppConfig;
+using FibonacciGeneratorAPI.AppConfigs;
 using FibonacciGeneratorAPI.Installers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

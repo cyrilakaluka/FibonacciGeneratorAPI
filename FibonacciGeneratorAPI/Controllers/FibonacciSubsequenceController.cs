@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FibonacciGeneratorAPI.DTOs.Requests;
-using FibonacciGeneratorAPI.DTOs.Response;
+using FibonacciGeneratorAPI.DTOs.Responses;
 using FibonacciGeneratorAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

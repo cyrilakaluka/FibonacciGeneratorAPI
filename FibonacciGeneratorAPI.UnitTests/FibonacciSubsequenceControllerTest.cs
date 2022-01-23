@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FibonacciGeneratorAPI.Controllers;
 using FibonacciGeneratorAPI.DTOs.Requests;
-using FibonacciGeneratorAPI.DTOs.Response;
+using FibonacciGeneratorAPI.DTOs.Responses;
 using FibonacciGeneratorAPI.Services.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;

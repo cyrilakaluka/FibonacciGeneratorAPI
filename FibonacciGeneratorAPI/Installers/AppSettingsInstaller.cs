@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
-using FibonacciGeneratorAPI.AppConfig;
+using FibonacciGeneratorAPI.AppConfigs;
 
 namespace FibonacciGeneratorAPI.Installers
 {

@@ -1,4 +1,4 @@
-﻿namespace FibonacciGeneratorAPI.AppConfig
+﻿namespace FibonacciGeneratorAPI.AppConfigs
 {
     public class SwaggerConfig : IAppConfig
     {
