@@ -1,4 +1,5 @@
 using FibonacciGeneratorAPI.AppConfigs;
+using FibonacciGeneratorAPI.Extensions;
 using FibonacciGeneratorAPI.Installers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,15 +36,6 @@ namespace FibonacciGeneratorAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-
-                // Configure Swagger
-                var swaggerConfig = app.ApplicationServices.GetService<SwaggerConfig>();
-                app.UseSwagger(options => options.RouteTemplate = swaggerConfig?.JsonRoute);
-                app.UseSwaggerUI(x =>
-                {
-                    x.RoutePrefix = string.Empty;
-                    x.SwaggerEndpoint($"{swaggerConfig?.UiEndpoint}", swaggerConfig?.Description);
-                });
             }
 
             app.UseHttpsRedirection();
@@ -54,6 +46,8 @@ namespace FibonacciGeneratorAPI
             app.UseCors(CorsConfig.DefaultPolicy);
 
             app.UseRouting();
+
+            app.UseSwaggerDoc();
 
             app.UseAuthorization();
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FibonacciGeneratorAPI.DTOs.Requests;
@@ -7,7 +6,6 @@ using FibonacciGeneratorAPI.DTOs.Responses;
 using FibonacciGeneratorAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 
 namespace FibonacciGeneratorAPI.Controllers

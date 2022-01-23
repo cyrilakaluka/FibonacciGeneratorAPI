@@ -26,13 +26,23 @@ namespace FibonacciGeneratorAPI.Installers
                     {
                         Name = "Chibueze Cyril Akaluka",
                         Email = "akalukacyril@gmail.com",
+                        Url = new Uri("https://github.com/cyrilakaluka")
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "MIT",
+                        Url = new Uri("https://github.com/cyrilakaluka/FibonacciGeneratorAPI/blob/master/LICENSE")
                     }
                 });
 
                 // Add XML documentation
-                var fileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
-                x.IncludeXmlComments(filePath);
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if(File.Exists(xmlPath))
+                    x.IncludeXmlComments(xmlPath);
+
+                x.DescribeAllParametersInCamelCase();
+                x.OrderActionsBy(o => o.RelativePath);
             });
         }
     }
