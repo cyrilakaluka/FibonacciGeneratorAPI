@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FibonacciGeneratorAPI.DTOs.Requests;
 using FibonacciGeneratorAPI.DTOs.Responses;
 using FibonacciGeneratorAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 
 namespace FibonacciGeneratorAPI.Controllers
@@ -28,8 +31,17 @@ namespace FibonacciGeneratorAPI.Controllers
         /// <summary>
         /// Generates a subsequence from a sequence of Fibonacci numbers according to the start and end index parameters.
         /// </summary>
-        /// <returns>An awaitable task of type <see cref="IActionResult"/>.</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET api/fibonacci-subsequence?StartIndex=0&amp;EndIndex=5&amp;UseCache=false&amp;ExecutionTimeout=5000&amp;MaxAllowedMemoryUsage=1000
+        /// </remarks>
+        /// <returns>An awaitable task that resolves into an <see cref="IActionResult"/></returns>
+        /// <response code="200">Returns an object containing the subsequence and a list of errors if any.</response>
+        /// <response code="400">If the StartIndex parameter is greater than the EndIndex</response>
         [HttpGet(Routes.GetFibonacciSubsequence)]
+        [ProducesResponseType(typeof(FibonacciSubsequenceResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult>GetFibonacciSubsequence([FromQuery] FibonacciSubsequenceRequest request)
         {
             // Create the output response

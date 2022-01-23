@@ -17,7 +17,17 @@ namespace FibonacciGeneratorAPI.Installers
         {
             Services.AddSwaggerGen(x =>
             {
-                x.SwaggerDoc("v1", new OpenApiInfo { Title = "Fibonacci Generator API", Version = "v1" });
+                x.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Fibonacci Generator API", 
+                    Version = "v1",
+                    Description = "An API to generate a subsequence from a Fibonacci sequence",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Chibueze Cyril Akaluka",
+                        Email = "akalukacyril@gmail.com",
+                    }
+                });
 
                 // Add XML documentation
                 var fileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
